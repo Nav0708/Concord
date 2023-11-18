@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
+import {UserContext} from '/src/App.jsx'
+
 
 const ChatRoom = () => {
+  const context=useContext(UserContext);
   const [roomDetails, setRoomDetails] = useState(null);
   const [messageText, setMessageText] = useState('');
+  const [posterId, setPosterId] = useState('');
   const [timestamp, setTimestamp] = useState(null);
   const [messageData, setMessageData] = useState([]);
-
   const { roomId } = useParams();
 
   useEffect(() => {
@@ -46,14 +49,17 @@ const ChatRoom = () => {
 
   const handleSendMessage = async () => {
     const response = await addMessage(roomId, {
+      
       messageText: messageText,
     });
-    var newTimestamp = await response.text();
+    console.log(response);
+    const newTimestamp = '';
     setTimestamp(newTimestamp);
-    getMessage(roomId); // Fetch updated messages after sending a new message
+    getMessage(roomId); 
   };
 
   return (
+    <>
     <div>
       {roomDetails && (
         <div>
@@ -61,22 +67,24 @@ const ChatRoom = () => {
           <p>Description: {roomDetails.description}</p>
         </div>
       )}
+      <ul>
+        {messageData.map((message, id) => (
+            <li key={id}>
+            <strong>{}:</strong> {message.messageText.messageText} - {message.timestamp}
+            </li>
+        ))}
+      </ul>
+    </div>
+    <div>
       <input
         type="text"
         value={messageText}
         onChange={(e) => setMessageText(e.target.value)}
       />
-      <ul>
-        {messageData.map((message, id) => (
-            <li key={id}>
-            <strong>{/*username*/}:</strong> {JSON.stringify(message.messageText)} - {message.timestamp}
-            </li>
-        ))}
-      </ul>
-
       <button onClick={handleSendMessage}>Send Message</button>
       {timestamp && <p>Message sent at: {timestamp}</p>}
     </div>
+    </>
   );
 };
 

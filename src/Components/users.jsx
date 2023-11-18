@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
+import {UserContext} from '/src/App.jsx'
 
 const LoginForm = () => {
-
+  const context=useContext(UserContext);
   const [editMode, setEditMode] = useState(false);
-  const [foundUser, setFoundUser] = useState('');
-  setFoundUser(context);
+  const [foundUser, setFoundUser] = useState(context.username);
+  const [username, setUsername] = useState('');
 
   const getCookie = (name) => {
     let cookieValue = null;

@@ -1,45 +1,41 @@
-import { useState, useEffect  } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, createContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import RoomList from './Components/rooms.jsx'
-import LoginForm from './Components/users.jsx'
-import ChatRoom from './Components/chat-room.jsx'
-import React, { createContext } from "react";
+import RoomList from './Components/rooms.jsx';
+import LoginForm from './Components/users.jsx';
+import ChatRoom from './Components/chat-room.jsx';
 
-const userContext = createContext();
+const UserContext = createContext();
 
 function App() {
-  const [username, setUsername] = useState('');
   
+  const [username, setUsername] = useState('');
   return (
-    <>  
     <Router>
       <div className="app-container">
+      <UserContext.Provider value={{username}}>
         <Routes>
-          <userContext.Provider value={{ username: '' }}>
-            <Route path="/" element={<Home />} />
-            <Route path="/rooms/:roomId" element={<Chat/>} />
-          </userContext.Provider>
+          <Route path="/" element={<Home />} />
+          <Route path="/rooms/:roomId" element={<Chat />} />
         </Routes>
+      </UserContext.Provider>
       </div>
     </Router>
-    </>
-  )
+  );
 }
+
 const Home = () => (
   <div>
     <RoomList />
     <LoginForm />
   </div>
 );
+
 const Chat = () => (
   <div>
-    <LoginForm />
-    <ChatRoom />
+      <LoginForm />
+      <ChatRoom/>
   </div>
 );
 
-export default App
-
+export {UserContext}
+export default App;
