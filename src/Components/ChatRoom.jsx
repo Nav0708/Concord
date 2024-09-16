@@ -4,13 +4,15 @@ import {UserContext} from '/src/App.jsx'
 
 
 const ChatRoom = () => {
-  const context=useContext(UserContext);
+  const usercontext=useContext(UserContext);
   const [roomDetails, setRoomDetails] = useState(null);
   const [messageText, setMessageText] = useState('');
   const [posterId, setPosterId] = useState('');
   const [timestamp, setTimestamp] = useState(null);
   const [messageData, setMessageData] = useState([]);
+  const [user, setUser]=useState(usercontext);
   const { roomId } = useParams();
+  console.log(user);
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -38,25 +40,26 @@ const ChatRoom = () => {
   const getMessage = async (roomId) => {
     const response = await fetch(`/api/rooms/${roomId}/chats`);
     if (response.ok) {
-      const messagesData = await response.json();
-      setMessageData(messagesData);
+      const data = await response.json();
+      setMessageData(data);
+      console.log('MessageData State :',messageData);
     } else {
       console.error('Failed to fetch messages');
     }
   };
 
-  console.log(messageData);
-
   const handleSendMessage = async () => {
-    const response = await addMessage(roomId, {
-      
-      messageText: messageText,
-    });
-    console.log(response);
-    const newTimestamp = '';
+    const response = await addMessage(roomId, {messageText: messageText});
+    console.log('Response object returned by handleSendMessage:',response);
+    const newTimestamp = response;
     setTimestamp(newTimestamp);
     getMessage(roomId); 
+    
   };
+
+  const handleRefresh = () => {
+      getMessage(roomId); 
+    };
 
   return (
     <>
@@ -70,7 +73,7 @@ const ChatRoom = () => {
       <ul>
         {messageData.map((message, id) => (
             <li key={id}>
-            <strong>{}:</strong> {message.messageText.messageText} - {message.timestamp}
+            <strong>{message.posterId}:</strong> {message.messageText.messageText} -@ {message.timestamp}
             </li>
         ))}
       </ul>
@@ -78,11 +81,13 @@ const ChatRoom = () => {
     <div>
       <input
         type="text"
-        value={messageText}
         onChange={(e) => setMessageText(e.target.value)}
       />
       <button onClick={handleSendMessage}>Send Message</button>
       {timestamp && <p>Message sent at: {timestamp}</p>}
+      <button onClick={handleRefresh}>
+        Refresh
+      </button>
     </div>
     </>
   );

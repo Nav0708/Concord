@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import  ChatRoom  from './chat-room.jsx';
+import  ChatRoom  from './ChatRoom.jsx';
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
@@ -16,15 +16,10 @@ const RoomList = () => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/rooms/');
-        if (!response.ok) {
-          throw new Error('Failed to fetch rooms');
-        }
         const data = await response.json();
         setRooms(data);
-        console.log(data);
         setLoading(false);
       } catch (error) {
-        setError(error.message);
         setLoading(false);
       }
     };
@@ -57,10 +52,15 @@ const RoomList = () => {
     if (!updatedData.ok) {
       throw new Error('Failed to fetch updated rooms');
     }
-
+    if(response.ok)
+    {
+    window.location.reload();
     setRooms(updatedData);
     setNewRoomName('');
     setNewRoomDescription('');
+
+    }
+    
   };
 
   if (loading) return <div>Loading...</div>;
@@ -108,7 +108,8 @@ const ListRooms = ({ rooms, selectedRoom, setSelectedRoom, handleRoomClick }) =>
         ))}
         </ul>
       ) : (
-        <p>No rooms available</p>
+
+        <p>Loading rooms....</p>
       )}
     </div>
   );
